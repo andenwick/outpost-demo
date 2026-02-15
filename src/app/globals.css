@@ -296,16 +296,19 @@ img { display: block; }
 /* ─── Menu grid ─── */
 .menu-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr;
   gap: 0.75rem;
 }
-@media (min-width: 768px) {
+@media (min-width: 520px) {
+  .menu-grid { grid-template-columns: 1fr 1fr; gap: 1rem; }
+}
+@media (min-width: 900px) {
   .menu-grid { grid-template-columns: repeat(4, 1fr); gap: 1rem; }
 }
 .menu-item {
   position: relative;
   overflow: hidden;
-  aspect-ratio: 3/4;
+  aspect-ratio: 4/5;
   cursor: pointer;
 }
 .menu-item img {
@@ -372,36 +375,29 @@ img { display: block; }
 .testimonial-grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 0;
+  gap: 2.5rem;
 }
 @media (min-width: 768px) {
-  .testimonial-grid { grid-template-columns: repeat(3, 1fr); }
+  .testimonial-grid { grid-template-columns: repeat(3, 1fr); gap: 2rem; }
 }
 .testimonial-card {
-  padding: 2.5rem;
+  padding: 2.5rem 2rem;
   position: relative;
-  border-top: 1px solid var(--color-border-strong);
-}
-@media (min-width: 768px) {
-  .testimonial-card {
-    border-top: none;
-    border-left: 1px solid var(--color-border-strong);
-  }
-  .testimonial-card:first-child { border-left: none; }
+  background: var(--color-surface);
+  border-left: 2px solid var(--color-primary);
 }
 .testimonial-quote-mark {
   font-family: var(--ff-heading);
-  font-size: 5rem;
+  font-size: 4rem;
   color: var(--color-primary);
-  opacity: 0.08;
+  opacity: 0.15;
   line-height: 1;
-  position: absolute;
-  top: 1rem;
-  right: 1.5rem;
+  display: block;
+  margin-bottom: 0.5rem;
   pointer-events: none;
 }
 .testimonial-text {
-  font-size: 0.95rem;
+  font-size: 1.05rem;
   color: var(--color-text-muted);
   line-height: 1.85;
   font-style: italic;

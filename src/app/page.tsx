@@ -236,7 +236,7 @@ function Testimonials() {
           {testimonials.map((t, i) => (
             <FadeIn key={i} delay={i < 3 ? (i + 1) as 1 | 2 | 3 : undefined}>
               <div className="testimonial-card">
-                <span className="testimonial-quote-mark">&ldquo;</span>
+                <span className="testimonial-quote-mark">"</span>
                 <p className="testimonial-text">{t.text}</p>
                 <span className="testimonial-author">{t.author}</span>
               </div>
