@@ -47,7 +47,7 @@ function Nav() {
   );
 }
 
-/* ───────── Hero — uses refs for smooth parallax, no re-renders ───────── */
+/* ───────── Hero ───────── */
 function Hero() {
   const bgRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
@@ -60,11 +60,11 @@ function Hero() {
         requestAnimationFrame(() => {
           const y = window.scrollY;
           if (bgRef.current) {
-            bgRef.current.style.transform = `translate3d(0, ${y * 0.35}px, 0)`;
+            bgRef.current.style.transform = `translate3d(0, ${y * 0.3}px, 0)`;
           }
           if (contentRef.current) {
-            contentRef.current.style.transform = `translate3d(0, ${y * 0.12}px, 0)`;
-            contentRef.current.style.opacity = String(Math.max(0, 1 - y / 500));
+            contentRef.current.style.transform = `translate3d(0, ${y * 0.1}px, 0)`;
+            contentRef.current.style.opacity = String(Math.max(0, 1 - y / 600));
           }
           if (indicatorRef.current) {
             indicatorRef.current.style.opacity = String(Math.max(0, 1 - y / 200));
@@ -83,7 +83,7 @@ function Hero() {
       <div ref={bgRef} className="hero-bg">
         <Image
           src="/images/exterior.jpg"
-          alt="The Outpost restaurant exterior at dusk"
+          alt="The Outpost restaurant exterior"
           fill
           priority
           style={{ objectFit: "cover" }}
@@ -93,7 +93,7 @@ function Hero() {
       <div className="hero-overlay" />
       <div ref={contentRef} className="hero-content">
         <h1 className="hero-title">The Outpost</h1>
-        <div className="hero-divider" />
+        <div className="hero-rule" />
         <p className="hero-subtitle">Grantsville&apos;s Kitchen Since Day One</p>
       </div>
       <div
@@ -116,11 +116,14 @@ function About() {
   return (
     <section id="about" className="section">
       <div className="container">
+        <FadeIn>
+          <div className="section-rule" />
+        </FadeIn>
         <div className="about-grid">
           <FadeIn>
             <div>
               <span className="section-label">Our Story</span>
-              <h2 className="section-heading">Where Every Meal Feels<br />Like Coming Home</h2>
+              <h2 className="section-heading">Where Every Meal<br />Feels Like Home</h2>
               <div className="about-text">
                 <p>
                   The Outpost isn&apos;t just a restaurant — it&apos;s Grantsville&apos;s gathering place.
@@ -128,7 +131,7 @@ function About() {
                   together, we&apos;ve been serving up comfort food and cold drinks with a smile since day one.
                 </p>
                 <p>
-                  In a town like Grantsville, your neighbors are your family. That&apos;s how we treat everyone
+                  Your neighbors are your family. That&apos;s how we treat everyone
                   who walks through our door. Real food, real people, no pretense — just the kind of cooking
                   that makes you want to pull up a chair and stay a while.
                 </p>
@@ -152,7 +155,7 @@ function About() {
   );
 }
 
-/* ───────── Parallax image band — pure CSS, no JS ───────── */
+/* ───────── Parallax band ───────── */
 function ParallaxBand({ src, alt }: { src: string; alt?: string }) {
   return (
     <div
@@ -166,7 +169,7 @@ function ParallaxBand({ src, alt }: { src: string; alt?: string }) {
   );
 }
 
-/* ───────── Menu Highlights ───────── */
+/* ───────── Menu ───────── */
 const menuItems = [
   { src: "/images/food1-wings.jpg", label: "Wings", sub: "Crispy & sauced to order", alt: "Crispy wings" },
   { src: "/images/food9-burger.jpg", label: "Burgers", sub: "Half-pound, never frozen", alt: "Juicy burger" },
@@ -179,7 +182,8 @@ function MenuHighlights() {
     <section id="menu" className="section section-alt">
       <div className="container">
         <FadeIn>
-          <div style={{ textAlign: "center", marginBottom: "3.5rem" }}>
+          <div className="section-rule" />
+          <div style={{ textAlign: "center", marginBottom: "4rem" }}>
             <span className="section-label">The Menu</span>
             <h2 className="section-heading">From Our Kitchen</h2>
           </div>
@@ -200,7 +204,7 @@ function MenuHighlights() {
         </div>
 
         <FadeIn>
-          <div style={{ textAlign: "center", marginTop: "3rem" }}>
+          <div style={{ textAlign: "center", marginTop: "3.5rem" }}>
             <a href="#" className="cta-btn">View Full Menu</a>
           </div>
         </FadeIn>
@@ -221,7 +225,8 @@ function Testimonials() {
     <section id="reviews" className="section">
       <div className="container">
         <FadeIn>
-          <div style={{ textAlign: "center", marginBottom: "3.5rem" }}>
+          <div className="section-rule" />
+          <div style={{ marginBottom: "3.5rem" }}>
             <span className="section-label">Testimonials</span>
             <h2 className="section-heading">What People Are Saying</h2>
           </div>
@@ -233,7 +238,7 @@ function Testimonials() {
               <div className="testimonial-card">
                 <span className="testimonial-quote-mark">&ldquo;</span>
                 <p className="testimonial-text">{t.text}</p>
-                <span className="testimonial-author">— {t.author}</span>
+                <span className="testimonial-author">{t.author}</span>
               </div>
             </FadeIn>
           ))}
@@ -245,13 +250,13 @@ function Testimonials() {
 
 /* ───────── Location ───────── */
 const hours = [
-  { day: "Monday", time: "11:00 AM – 9:00 PM" },
-  { day: "Tuesday", time: "11:00 AM – 9:00 PM" },
-  { day: "Wednesday", time: "11:00 AM – 9:00 PM" },
-  { day: "Thursday", time: "11:00 AM – 9:00 PM" },
-  { day: "Friday", time: "11:00 AM – 9:00 PM" },
-  { day: "Saturday", time: "11:00 AM – 9:00 PM" },
-  { day: "Sunday", time: "11:00 AM – 8:00 PM" },
+  { day: "Monday", time: "11 AM – 9 PM" },
+  { day: "Tuesday", time: "11 AM – 9 PM" },
+  { day: "Wednesday", time: "11 AM – 9 PM" },
+  { day: "Thursday", time: "11 AM – 9 PM" },
+  { day: "Friday", time: "11 AM – 9 PM" },
+  { day: "Saturday", time: "11 AM – 9 PM" },
+  { day: "Sunday", time: "11 AM – 8 PM" },
 ];
 
 function Location() {
@@ -259,16 +264,17 @@ function Location() {
     <section id="visit" className="section section-alt">
       <div className="container">
         <FadeIn>
-          <div style={{ textAlign: "center", marginBottom: "3.5rem" }}>
+          <div className="section-rule" />
+          <div style={{ marginBottom: "3.5rem" }}>
             <span className="section-label">Find Us</span>
-            <h2 className="section-heading">Visit Us</h2>
+            <h2 className="section-heading">Come By Anytime</h2>
           </div>
         </FadeIn>
 
         <div className="location-grid">
           <FadeIn>
             <div>
-              <h3 style={{ fontFamily: "var(--ff-heading)", fontSize: "1.2rem", color: "var(--color-text)", marginBottom: "1.5rem", fontWeight: 600 }}>
+              <h3 style={{ fontFamily: "var(--ff-body)", fontSize: "0.7rem", color: "var(--color-primary)", letterSpacing: "0.15em", textTransform: "uppercase", fontWeight: 700, marginBottom: "1.5rem" }}>
                 Hours
               </h3>
               <div>
@@ -280,10 +286,10 @@ function Location() {
                 ))}
               </div>
 
-              <h3 style={{ fontFamily: "var(--ff-heading)", fontSize: "1.2rem", color: "var(--color-text)", marginTop: "2.5rem", marginBottom: "1.25rem", fontWeight: 600 }}>
+              <h3 style={{ fontFamily: "var(--ff-body)", fontSize: "0.7rem", color: "var(--color-primary)", letterSpacing: "0.15em", textTransform: "uppercase", fontWeight: 700, marginTop: "2.5rem", marginBottom: "1.25rem" }}>
                 Contact
               </h3>
-              <div style={{ display: "flex", flexDirection: "column", gap: "0.6rem", fontSize: "0.9rem", color: "var(--color-text-muted)" }}>
+              <div style={{ display: "flex", flexDirection: "column", gap: "0.6rem", fontSize: "0.85rem", color: "var(--color-text-muted)" }}>
                 <span>58 West Main St, Grantsville, UT 84029</span>
                 <a href="tel:+14352490396" className="contact-link">(435) 249-0396</a>
                 <a href="mailto:outposteats@gmail.com" className="contact-link">outposteats@gmail.com</a>
@@ -311,18 +317,16 @@ function Footer() {
   return (
     <footer className="footer">
       <div className="container">
-        <span style={{ fontFamily: "var(--ff-heading)", fontSize: "1.35rem", color: "var(--color-primary)" }}>
-          The Outpost
-        </span>
-        <div style={{ marginTop: "0.75rem" }}>
+        <span className="footer-logo">The Outpost</span>
+        <div style={{ marginTop: "1rem" }}>
           <a
             href="https://www.facebook.com/profile.php?id=100075872236123"
             target="_blank"
             rel="noopener noreferrer"
             className="contact-link"
-            style={{ fontSize: "0.85rem" }}
+            style={{ fontSize: "0.75rem", letterSpacing: "0.1em", textTransform: "uppercase", fontWeight: 600 }}
           >
-            Follow us on Facebook
+            Facebook
           </a>
         </div>
         <p className="footer-credit">
