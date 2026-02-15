@@ -183,7 +183,7 @@ function MenuHighlights() {
       <div className="container">
         <FadeIn>
           <div className="section-rule" />
-          <div style={{ textAlign: "center", marginBottom: "4rem" }}>
+          <div style={{ marginBottom: "4rem" }}>
             <span className="section-label">The Menu</span>
             <h2 className="section-heading">From Our Kitchen</h2>
           </div>
@@ -227,8 +227,8 @@ function Testimonials() {
         <FadeIn>
           <div className="section-rule" />
           <div style={{ marginBottom: "3.5rem" }}>
-            <span className="section-label">Testimonials</span>
-            <h2 className="section-heading">What People Are Saying</h2>
+            <span className="section-label">Words</span>
+            <h2 className="section-heading">Don&apos;t Take Our Word For It</h2>
           </div>
         </FadeIn>
 
@@ -267,7 +267,7 @@ function Location() {
           <div className="section-rule" />
           <div style={{ marginBottom: "3.5rem" }}>
             <span className="section-label">Find Us</span>
-            <h2 className="section-heading">Come By Anytime</h2>
+            <h2 className="section-heading">Pull Up a Chair</h2>
           </div>
         </FadeIn>
 
