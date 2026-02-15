@@ -388,6 +388,19 @@ img { display: block; }
   border: 1px solid var(--color-border);
 }
 
+/* ─── Parallax divider ─── */
+.parallax-divider {
+  position: relative;
+  height: 40vh;
+  min-height: 280px;
+  overflow: hidden;
+}
+.parallax-divider-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, var(--color-bg) 0%, rgba(17,16,16,0.4) 20%, rgba(17,16,16,0.4) 80%, var(--color-bg-alt) 100%);
+}
+
 /* ─── Footer ─── */
 .footer {
   background: var(--color-secondary);

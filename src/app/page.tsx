@@ -1,7 +1,38 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
+
+/* ───────── Parallax hook ───────── */
+function useParallax(speed = 0.3) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [offset, setOffset] = useState(0);
+
+  useEffect(() => {
+    let ticking = false;
+    const onScroll = () => {
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          if (ref.current) {
+            const rect = ref.current.getBoundingClientRect();
+            const viewH = window.innerHeight;
+            // Only calculate when element is near viewport
+            if (rect.bottom > -200 && rect.top < viewH + 200) {
+              setOffset((rect.top - viewH / 2) * speed);
+            }
+          }
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [speed]);
+
+  return { ref, offset };
+}
 
 /* ───────── Scroll fade-in ───────── */
 function useFadeIn() {
@@ -23,6 +54,27 @@ function FadeIn({ children, className = "", delay }: { children: React.ReactNode
   const ref = useFadeIn();
   const delayClass = delay ? `fade-in-delay-${delay}` : "";
   return <div ref={ref} className={`fade-in ${delayClass} ${className}`}>{children}</div>;
+}
+
+/* ───────── Tilt card hook ───────── */
+function useTilt(intensity = 8) {
+  const ref = useRef<HTMLDivElement>(null);
+
+  const onMove = useCallback((e: React.MouseEvent) => {
+    const el = ref.current;
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / rect.width - 0.5;
+    const y = (e.clientY - rect.top) / rect.height - 0.5;
+    el.style.transform = `perspective(600px) rotateY(${x * intensity}deg) rotateX(${-y * intensity}deg) translateY(-2px)`;
+  }, [intensity]);
+
+  const onLeave = useCallback(() => {
+    const el = ref.current;
+    if (el) el.style.transform = "perspective(600px) rotateY(0deg) rotateX(0deg) translateY(0px)";
+  }, []);
+
+  return { ref, onMove, onLeave };
 }
 
 /* ───────── Nav ───────── */
@@ -47,26 +99,63 @@ function Nav() {
   );
 }
 
-/* ───────── Hero ───────── */
+/* ───────── Hero with parallax ───────── */
 function Hero() {
+  const [scrollY, setScrollY] = useState(0);
+
+  useEffect(() => {
+    let ticking = false;
+    const onScroll = () => {
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          setScrollY(window.scrollY);
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  // Parallax: image moves at 40% of scroll speed, content fades out
+  const imgY = scrollY * 0.4;
+  const contentOpacity = Math.max(0, 1 - scrollY / 600);
+  const contentY = scrollY * 0.15;
+
   return (
     <section className="hero">
-      <Image src="/images/exterior.jpg" alt="The Outpost restaurant exterior at dusk" fill priority style={{ objectFit: "cover" }} quality={90} />
+      <div style={{ position: "absolute", inset: 0, transform: `translateY(${imgY}px)`, willChange: "transform" }}>
+        <Image src="/images/exterior.jpg" alt="The Outpost restaurant exterior at dusk" fill priority style={{ objectFit: "cover" }} quality={90} />
+      </div>
       <div className="hero-overlay" />
-      <div className="hero-content">
+      <div
+        className="hero-content"
+        style={{ opacity: contentOpacity, transform: `translateY(${contentY}px)`, willChange: "transform, opacity" }}
+      >
         <h1 className="hero-title">The Outpost</h1>
         <div className="hero-divider" />
         <p className="hero-subtitle">Grantsville&apos;s Kitchen Since Day One</p>
       </div>
-      <div className="scroll-indicator" style={{ position: "absolute", bottom: "2.5rem", left: "50%", transform: "translateX(-50%)", zIndex: 1, color: "var(--color-text-muted)", fontSize: "1.25rem" }}>
+      <div
+        className="scroll-indicator"
+        style={{
+          position: "absolute", bottom: "2.5rem", left: "50%",
+          transform: "translateX(-50%)", zIndex: 1,
+          color: "var(--color-text-muted)", fontSize: "1.25rem",
+          opacity: Math.max(0, 1 - scrollY / 300),
+        }}
+      >
         ↓
       </div>
     </section>
   );
 }
 
-/* ───────── About ───────── */
+/* ───────── About with parallax image ───────── */
 function About() {
+  const { ref: imgRef, offset: imgOffset } = useParallax(0.15);
+
   return (
     <section id="about" className="section">
       <div className="container">
@@ -90,13 +179,50 @@ function About() {
             </div>
           </FadeIn>
           <FadeIn delay={1}>
-            <div className="about-img-wrapper">
-              <Image src="/images/food6-potato.jpg" alt="Loaded baked potato from The Outpost" fill style={{ objectFit: "cover" }} sizes="(max-width: 768px) 100vw, 50vw" />
+            <div ref={imgRef} className="about-img-wrapper" style={{ overflow: "hidden" }}>
+              <div style={{ transform: `translateY(${imgOffset}px)`, transition: "transform 0.1s linear", width: "100%", height: "120%", position: "relative", top: "-10%" }}>
+                <Image src="/images/food6-potato.jpg" alt="Loaded baked potato from The Outpost" fill style={{ objectFit: "cover" }} sizes="(max-width: 768px) 100vw, 50vw" />
+              </div>
             </div>
           </FadeIn>
         </div>
       </div>
     </section>
+  );
+}
+
+/* ───────── Full-width parallax divider ───────── */
+function ParallaxDivider({ src, alt }: { src: string; alt: string }) {
+  const [scrollY, setScrollY] = useState(0);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    let ticking = false;
+    const onScroll = () => {
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          if (ref.current) {
+            const rect = ref.current.getBoundingClientRect();
+            if (rect.bottom > 0 && rect.top < window.innerHeight) {
+              setScrollY(rect.top * 0.3);
+            }
+          }
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  return (
+    <div ref={ref} className="parallax-divider">
+      <div style={{ transform: `translateY(${scrollY}px)`, willChange: "transform", position: "absolute", inset: "-20% 0", height: "140%" }}>
+        <Image src={src} alt={alt} fill style={{ objectFit: "cover" }} sizes="100vw" />
+      </div>
+      <div className="parallax-divider-overlay" />
+    </div>
   );
 }
 
@@ -143,12 +269,29 @@ function MenuHighlights() {
   );
 }
 
-/* ───────── Testimonials ───────── */
+/* ───────── Testimonials with tilt ───────── */
 const testimonials = [
   { text: "The stuffed bell peppers at The Outpost has to be the best peppers I have ever eaten. Highly recommend!", author: "Bob Logan" },
   { text: "100% recommend! Great food, friendly staff, and it just feels like home. We eat here at least once a week.", author: "Facebook Review" },
   { text: "Best comfort food in the valley. The portions are huge and everything is made fresh. Don't sleep on this place.", author: "Local Regular" },
 ];
+
+function TestimonialCard({ text, author }: { text: string; author: string }) {
+  const { ref, onMove, onLeave } = useTilt(6);
+  return (
+    <div
+      ref={ref}
+      className="testimonial-card"
+      onMouseMove={onMove}
+      onMouseLeave={onLeave}
+      style={{ transition: "transform 0.2s ease-out, border-color 0.3s ease" }}
+    >
+      <span className="testimonial-quote-mark">&ldquo;</span>
+      <p className="testimonial-text">{text}</p>
+      <span className="testimonial-author">— {author}</span>
+    </div>
+  );
+}
 
 function Testimonials() {
   return (
@@ -164,11 +307,7 @@ function Testimonials() {
         <div className="testimonial-grid">
           {testimonials.map((t, i) => (
             <FadeIn key={i} delay={i < 3 ? (i + 1) as 1 | 2 | 3 : undefined}>
-              <div className="testimonial-card">
-                <span className="testimonial-quote-mark">&ldquo;</span>
-                <p className="testimonial-text">{t.text}</p>
-                <span className="testimonial-author">— {t.author}</span>
-              </div>
+              <TestimonialCard text={t.text} author={t.author} />
             </FadeIn>
           ))}
         </div>
@@ -206,7 +345,6 @@ function Location() {
                 Hours
               </h3>
               <div>
-                {/* PLACEHOLDER: verify actual hours with the restaurant */}
                 {hours.map((h) => (
                   <div key={h.day} className="hours-row">
                     <span className="hours-day">{h.day}</span>
@@ -273,8 +411,10 @@ export default function Home() {
       <main>
         <Hero />
         <About />
+        <ParallaxDivider src="/images/food7-steak.jpg" alt="Comfort food at The Outpost" />
         <MenuHighlights />
         <Testimonials />
+        <ParallaxDivider src="/images/food2-breakfast.jpg" alt="Breakfast at The Outpost" />
         <Location />
       </main>
       <Footer />
