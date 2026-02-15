@@ -92,6 +92,7 @@ function Hero() {
       </div>
       <div className="hero-overlay" />
       <div ref={contentRef} className="hero-content">
+        <span className="hero-label">Est. Grantsville, UT</span>
         <h1 className="hero-title">The Outpost</h1>
         <div className="hero-rule" />
         <p className="hero-subtitle">Grantsville&apos;s Kitchen Since Day One</p>
@@ -274,7 +275,7 @@ function Location() {
         <div className="location-grid">
           <FadeIn>
             <div>
-              <h3 style={{ fontFamily: "var(--ff-body)", fontSize: "0.7rem", color: "var(--color-primary)", letterSpacing: "0.15em", textTransform: "uppercase", fontWeight: 700, marginBottom: "1.5rem" }}>
+              <h3 style={{ fontSize: "0.7rem", color: "var(--color-accent)", letterSpacing: "0.2em", textTransform: "uppercase", fontWeight: 600, marginBottom: "1.5rem" }}>
                 Hours
               </h3>
               <div>
@@ -286,7 +287,7 @@ function Location() {
                 ))}
               </div>
 
-              <h3 style={{ fontFamily: "var(--ff-body)", fontSize: "0.7rem", color: "var(--color-primary)", letterSpacing: "0.15em", textTransform: "uppercase", fontWeight: 700, marginTop: "2.5rem", marginBottom: "1.25rem" }}>
+              <h3 style={{ fontSize: "0.7rem", color: "var(--color-accent)", letterSpacing: "0.2em", textTransform: "uppercase", fontWeight: 600, marginTop: "2.5rem", marginBottom: "1.25rem" }}>
                 Contact
               </h3>
               <div style={{ display: "flex", flexDirection: "column", gap: "0.6rem", fontSize: "0.85rem", color: "var(--color-text-muted)" }}>
