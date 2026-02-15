@@ -3,16 +3,16 @@
 :root {
   --color-primary: #E8C298;
   --color-primary-dark: #C49A6C;
-  --color-secondary: #1C1410;
-  --color-bg: #0F0D0B;
-  --color-bg-alt: #161311;
-  --color-surface: #1E1A16;
+  --color-secondary: #1E1610;
+  --color-bg: #2A2118;
+  --color-bg-alt: #241C14;
+  --color-surface: #322820;
   --color-text: #F2EDE8;
-  --color-text-muted: #9E9184;
+  --color-text-muted: #B5A594;
   --color-accent: #C75D3A;
   --color-accent-hover: #B04E2E;
-  --color-border: rgba(232, 194, 152, 0.08);
-  --color-border-strong: rgba(232, 194, 152, 0.18);
+  --color-border: rgba(232, 194, 152, 0.1);
+  --color-border-strong: rgba(232, 194, 152, 0.2);
 
   --ff-heading: var(--font-heading), Georgia, serif;
   --ff-body: var(--font-body), -apple-system, sans-serif;
@@ -79,7 +79,7 @@ img { display: block; }
   transition: all 0.5s cubic-bezier(0.22, 1, 0.36, 1);
 }
 .nav.scrolled {
-  background-color: rgba(15, 13, 11, 0.95);
+  background-color: rgba(42, 33, 24, 0.95);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   padding: 1rem 3rem;
@@ -137,9 +137,9 @@ img { display: block; }
   inset: 0;
   background:
     linear-gradient(180deg,
-      rgba(15,13,11,0.15) 0%,
-      rgba(15,13,11,0.0) 30%,
-      rgba(15,13,11,0.4) 65%,
+      rgba(42,33,24,0.15) 0%,
+      rgba(42,33,24,0.0) 30%,
+      rgba(42,33,24,0.45) 65%,
       var(--color-bg) 100%
     );
   z-index: 1;
@@ -282,8 +282,8 @@ img { display: block; }
   inset: 0;
   background: linear-gradient(180deg,
     var(--color-bg) 0%,
-    rgba(15,13,11,0.3) 12%,
-    rgba(15,13,11,0.3) 88%,
+    rgba(42,33,24,0.35) 12%,
+    rgba(42,33,24,0.35) 88%,
     var(--color-bg-alt) 100%
   );
 }
