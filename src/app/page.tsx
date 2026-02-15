@@ -171,10 +171,10 @@ function ParallaxBand({ src, alt }: { src: string; alt?: string }) {
 
 /* ───────── Menu ───────── */
 const menuItems = [
-  { src: "/images/food1-wings.jpg", label: "Wings", sub: "Crispy & sauced to order", alt: "Crispy wings" },
-  { src: "/images/food9-burger.jpg", label: "Burgers", sub: "Half-pound, never frozen", alt: "Juicy burger" },
-  { src: "/images/food3-pasta.jpg", label: "Comfort Classics", sub: "The dishes you grew up on", alt: "Pasta dish" },
-  { src: "/images/food8-fried.jpg", label: "Country Fried", sub: "Golden, crispy, perfect", alt: "Country fried steak" },
+  { src: "/images/food1-wings.jpg", label: "Lobster Tail", sub: "Butterflied & broiled to perfection", alt: "Broiled lobster tail with drawn butter" },
+  { src: "/images/food9-burger.jpg", label: "Burgers", sub: "Stacked high, never frozen", alt: "Loaded cheeseburger" },
+  { src: "/images/food4-burrito.jpg", label: "Smothered Burrito", sub: "Drowned in green chile & cheese", alt: "Wet burrito with green chile sauce" },
+  { src: "/images/food5-salad.jpg", label: "Fajitas", sub: "Sizzling chicken & peppers", alt: "Chicken fajitas with bell peppers" },
 ];
 
 function MenuHighlights() {
