@@ -341,7 +341,7 @@ function Location() {
         <div className="location-grid">
           <FadeIn>
             <div>
-              <h3 style={{ fontFamily: "var(--font-heading)", fontSize: "1.25rem", color: "var(--color-text)", marginBottom: "1.25rem", fontWeight: 600 }}>
+              <h3 style={{ fontFamily: "var(--ff-heading)", fontSize: "1.25rem", color: "var(--color-text)", marginBottom: "1.25rem", fontWeight: 600 }}>
                 Hours
               </h3>
               <div>
@@ -353,7 +353,7 @@ function Location() {
                 ))}
               </div>
 
-              <h3 style={{ fontFamily: "var(--font-heading)", fontSize: "1.25rem", color: "var(--color-text)", marginTop: "2.5rem", marginBottom: "1rem", fontWeight: 600 }}>
+              <h3 style={{ fontFamily: "var(--ff-heading)", fontSize: "1.25rem", color: "var(--color-text)", marginTop: "2.5rem", marginBottom: "1rem", fontWeight: 600 }}>
                 Contact
               </h3>
               <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", fontSize: "0.95rem", color: "var(--color-text-muted)" }}>
@@ -384,7 +384,7 @@ function Footer() {
   return (
     <footer className="footer">
       <div className="container">
-        <span style={{ fontFamily: "var(--font-heading)", fontSize: "1.35rem", color: "var(--color-primary)" }}>
+        <span style={{ fontFamily: "var(--ff-heading)", fontSize: "1.35rem", color: "var(--color-primary)" }}>
           The Outpost
         </span>
         <div style={{ marginTop: "0.75rem" }}>
