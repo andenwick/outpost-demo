@@ -1,38 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useRef, useState, useCallback } from "react";
-
-/* ───────── Parallax hook ───────── */
-function useParallax(speed = 0.3) {
-  const ref = useRef<HTMLDivElement>(null);
-  const [offset, setOffset] = useState(0);
-
-  useEffect(() => {
-    let ticking = false;
-    const onScroll = () => {
-      if (!ticking) {
-        requestAnimationFrame(() => {
-          if (ref.current) {
-            const rect = ref.current.getBoundingClientRect();
-            const viewH = window.innerHeight;
-            // Only calculate when element is near viewport
-            if (rect.bottom > -200 && rect.top < viewH + 200) {
-              setOffset((rect.top - viewH / 2) * speed);
-            }
-          }
-          ticking = false;
-        });
-        ticking = true;
-      }
-    };
-    window.addEventListener("scroll", onScroll, { passive: true });
-    onScroll();
-    return () => window.removeEventListener("scroll", onScroll);
-  }, [speed]);
-
-  return { ref, offset };
-}
+import { useEffect, useRef, useState } from "react";
 
 /* ───────── Scroll fade-in ───────── */
 function useFadeIn() {
@@ -42,7 +11,7 @@ function useFadeIn() {
     if (!el) return;
     const obs = new IntersectionObserver(
       ([e]) => { if (e.isIntersecting) { el.classList.add("visible"); obs.unobserve(el); } },
-      { threshold: 0.12 }
+      { threshold: 0.1 }
     );
     obs.observe(el);
     return () => obs.disconnect();
@@ -54,27 +23,6 @@ function FadeIn({ children, className = "", delay }: { children: React.ReactNode
   const ref = useFadeIn();
   const delayClass = delay ? `fade-in-delay-${delay}` : "";
   return <div ref={ref} className={`fade-in ${delayClass} ${className}`}>{children}</div>;
-}
-
-/* ───────── Tilt card hook ───────── */
-function useTilt(intensity = 8) {
-  const ref = useRef<HTMLDivElement>(null);
-
-  const onMove = useCallback((e: React.MouseEvent) => {
-    const el = ref.current;
-    if (!el) return;
-    const rect = el.getBoundingClientRect();
-    const x = (e.clientX - rect.left) / rect.width - 0.5;
-    const y = (e.clientY - rect.top) / rect.height - 0.5;
-    el.style.transform = `perspective(600px) rotateY(${x * intensity}deg) rotateX(${-y * intensity}deg) translateY(-2px)`;
-  }, [intensity]);
-
-  const onLeave = useCallback(() => {
-    const el = ref.current;
-    if (el) el.style.transform = "perspective(600px) rotateY(0deg) rotateX(0deg) translateY(0px)";
-  }, []);
-
-  return { ref, onMove, onLeave };
 }
 
 /* ───────── Nav ───────── */
@@ -99,16 +47,28 @@ function Nav() {
   );
 }
 
-/* ───────── Hero with parallax ───────── */
+/* ───────── Hero — uses refs for smooth parallax, no re-renders ───────── */
 function Hero() {
-  const [scrollY, setScrollY] = useState(0);
+  const bgRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
+  const indicatorRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     let ticking = false;
     const onScroll = () => {
       if (!ticking) {
         requestAnimationFrame(() => {
-          setScrollY(window.scrollY);
+          const y = window.scrollY;
+          if (bgRef.current) {
+            bgRef.current.style.transform = `translate3d(0, ${y * 0.35}px, 0)`;
+          }
+          if (contentRef.current) {
+            contentRef.current.style.transform = `translate3d(0, ${y * 0.12}px, 0)`;
+            contentRef.current.style.opacity = String(Math.max(0, 1 - y / 500));
+          }
+          if (indicatorRef.current) {
+            indicatorRef.current.style.opacity = String(Math.max(0, 1 - y / 200));
+          }
           ticking = false;
         });
         ticking = true;
@@ -118,32 +78,31 @@ function Hero() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // Parallax: image moves at 40% of scroll speed, content fades out
-  const imgY = scrollY * 0.4;
-  const contentOpacity = Math.max(0, 1 - scrollY / 600);
-  const contentY = scrollY * 0.15;
-
   return (
     <section className="hero">
-      <div style={{ position: "absolute", inset: 0, transform: `translateY(${imgY}px)`, willChange: "transform" }}>
-        <Image src="/images/exterior.jpg" alt="The Outpost restaurant exterior at dusk" fill priority style={{ objectFit: "cover" }} quality={90} />
+      <div ref={bgRef} className="hero-bg">
+        <Image
+          src="/images/exterior.jpg"
+          alt="The Outpost restaurant exterior at dusk"
+          fill
+          priority
+          style={{ objectFit: "cover" }}
+          sizes="100vw"
+        />
       </div>
       <div className="hero-overlay" />
-      <div
-        className="hero-content"
-        style={{ opacity: contentOpacity, transform: `translateY(${contentY}px)`, willChange: "transform, opacity" }}
-      >
+      <div ref={contentRef} className="hero-content">
         <h1 className="hero-title">The Outpost</h1>
         <div className="hero-divider" />
         <p className="hero-subtitle">Grantsville&apos;s Kitchen Since Day One</p>
       </div>
       <div
+        ref={indicatorRef}
         className="scroll-indicator"
         style={{
           position: "absolute", bottom: "2.5rem", left: "50%",
-          transform: "translateX(-50%)", zIndex: 1,
+          transform: "translateX(-50%)", zIndex: 2,
           color: "var(--color-text-muted)", fontSize: "1.25rem",
-          opacity: Math.max(0, 1 - scrollY / 300),
         }}
       >
         ↓
@@ -152,10 +111,8 @@ function Hero() {
   );
 }
 
-/* ───────── About with parallax image ───────── */
+/* ───────── About ───────── */
 function About() {
-  const { ref: imgRef, offset: imgOffset } = useParallax(0.15);
-
   return (
     <section id="about" className="section">
       <div className="container">
@@ -163,7 +120,7 @@ function About() {
           <FadeIn>
             <div>
               <span className="section-label">Our Story</span>
-              <h2 className="section-heading">Where Every Meal Feels Like Coming Home</h2>
+              <h2 className="section-heading">Where Every Meal Feels<br />Like Coming Home</h2>
               <div className="about-text">
                 <p>
                   The Outpost isn&apos;t just a restaurant — it&apos;s Grantsville&apos;s gathering place.
@@ -179,10 +136,14 @@ function About() {
             </div>
           </FadeIn>
           <FadeIn delay={1}>
-            <div ref={imgRef} className="about-img-wrapper" style={{ overflow: "hidden" }}>
-              <div style={{ transform: `translateY(${imgOffset}px)`, transition: "transform 0.1s linear", width: "100%", height: "120%", position: "relative", top: "-10%" }}>
-                <Image src="/images/food6-potato.jpg" alt="Loaded baked potato from The Outpost" fill style={{ objectFit: "cover" }} sizes="(max-width: 768px) 100vw, 50vw" />
-              </div>
+            <div className="about-img-wrapper">
+              <Image
+                src="/images/food6-potato.jpg"
+                alt="Loaded baked potato from The Outpost"
+                fill
+                style={{ objectFit: "cover" }}
+                sizes="(max-width: 768px) 100vw, 50vw"
+              />
             </div>
           </FadeIn>
         </div>
@@ -191,37 +152,16 @@ function About() {
   );
 }
 
-/* ───────── Full-width parallax divider ───────── */
-function ParallaxDivider({ src, alt }: { src: string; alt: string }) {
-  const [scrollY, setScrollY] = useState(0);
-  const ref = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    let ticking = false;
-    const onScroll = () => {
-      if (!ticking) {
-        requestAnimationFrame(() => {
-          if (ref.current) {
-            const rect = ref.current.getBoundingClientRect();
-            if (rect.bottom > 0 && rect.top < window.innerHeight) {
-              setScrollY(rect.top * 0.3);
-            }
-          }
-          ticking = false;
-        });
-        ticking = true;
-      }
-    };
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-
+/* ───────── Parallax image band — pure CSS, no JS ───────── */
+function ParallaxBand({ src, alt }: { src: string; alt?: string }) {
   return (
-    <div ref={ref} className="parallax-divider">
-      <div style={{ transform: `translateY(${scrollY}px)`, willChange: "transform", position: "absolute", inset: "-20% 0", height: "140%" }}>
-        <Image src={src} alt={alt} fill style={{ objectFit: "cover" }} sizes="100vw" />
-      </div>
-      <div className="parallax-divider-overlay" />
+    <div
+      className="parallax-band"
+      style={{ backgroundImage: `url(${src})` }}
+      role="img"
+      aria-label={alt || ""}
+    >
+      <div className="parallax-band-overlay" />
     </div>
   );
 }
@@ -239,7 +179,7 @@ function MenuHighlights() {
     <section id="menu" className="section section-alt">
       <div className="container">
         <FadeIn>
-          <div style={{ textAlign: "center", marginBottom: "3rem" }}>
+          <div style={{ textAlign: "center", marginBottom: "3.5rem" }}>
             <span className="section-label">The Menu</span>
             <h2 className="section-heading">From Our Kitchen</h2>
           </div>
@@ -260,7 +200,7 @@ function MenuHighlights() {
         </div>
 
         <FadeIn>
-          <div style={{ textAlign: "center", marginTop: "2.5rem" }}>
+          <div style={{ textAlign: "center", marginTop: "3rem" }}>
             <a href="#" className="cta-btn">View Full Menu</a>
           </div>
         </FadeIn>
@@ -269,36 +209,19 @@ function MenuHighlights() {
   );
 }
 
-/* ───────── Testimonials with tilt ───────── */
+/* ───────── Testimonials ───────── */
 const testimonials = [
   { text: "The stuffed bell peppers at The Outpost has to be the best peppers I have ever eaten. Highly recommend!", author: "Bob Logan" },
   { text: "100% recommend! Great food, friendly staff, and it just feels like home. We eat here at least once a week.", author: "Facebook Review" },
   { text: "Best comfort food in the valley. The portions are huge and everything is made fresh. Don't sleep on this place.", author: "Local Regular" },
 ];
 
-function TestimonialCard({ text, author }: { text: string; author: string }) {
-  const { ref, onMove, onLeave } = useTilt(6);
-  return (
-    <div
-      ref={ref}
-      className="testimonial-card"
-      onMouseMove={onMove}
-      onMouseLeave={onLeave}
-      style={{ transition: "transform 0.2s ease-out, border-color 0.3s ease" }}
-    >
-      <span className="testimonial-quote-mark">&ldquo;</span>
-      <p className="testimonial-text">{text}</p>
-      <span className="testimonial-author">— {author}</span>
-    </div>
-  );
-}
-
 function Testimonials() {
   return (
     <section id="reviews" className="section">
       <div className="container">
         <FadeIn>
-          <div style={{ textAlign: "center", marginBottom: "3rem" }}>
+          <div style={{ textAlign: "center", marginBottom: "3.5rem" }}>
             <span className="section-label">Testimonials</span>
             <h2 className="section-heading">What People Are Saying</h2>
           </div>
@@ -307,7 +230,11 @@ function Testimonials() {
         <div className="testimonial-grid">
           {testimonials.map((t, i) => (
             <FadeIn key={i} delay={i < 3 ? (i + 1) as 1 | 2 | 3 : undefined}>
-              <TestimonialCard text={t.text} author={t.author} />
+              <div className="testimonial-card">
+                <span className="testimonial-quote-mark">&ldquo;</span>
+                <p className="testimonial-text">{t.text}</p>
+                <span className="testimonial-author">— {t.author}</span>
+              </div>
             </FadeIn>
           ))}
         </div>
@@ -332,7 +259,7 @@ function Location() {
     <section id="visit" className="section section-alt">
       <div className="container">
         <FadeIn>
-          <div style={{ textAlign: "center", marginBottom: "3rem" }}>
+          <div style={{ textAlign: "center", marginBottom: "3.5rem" }}>
             <span className="section-label">Find Us</span>
             <h2 className="section-heading">Visit Us</h2>
           </div>
@@ -341,7 +268,7 @@ function Location() {
         <div className="location-grid">
           <FadeIn>
             <div>
-              <h3 style={{ fontFamily: "var(--ff-heading)", fontSize: "1.25rem", color: "var(--color-text)", marginBottom: "1.25rem", fontWeight: 600 }}>
+              <h3 style={{ fontFamily: "var(--ff-heading)", fontSize: "1.2rem", color: "var(--color-text)", marginBottom: "1.5rem", fontWeight: 600 }}>
                 Hours
               </h3>
               <div>
@@ -353,10 +280,10 @@ function Location() {
                 ))}
               </div>
 
-              <h3 style={{ fontFamily: "var(--ff-heading)", fontSize: "1.25rem", color: "var(--color-text)", marginTop: "2.5rem", marginBottom: "1rem", fontWeight: 600 }}>
+              <h3 style={{ fontFamily: "var(--ff-heading)", fontSize: "1.2rem", color: "var(--color-text)", marginTop: "2.5rem", marginBottom: "1.25rem", fontWeight: 600 }}>
                 Contact
               </h3>
-              <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", fontSize: "0.95rem", color: "var(--color-text-muted)" }}>
+              <div style={{ display: "flex", flexDirection: "column", gap: "0.6rem", fontSize: "0.9rem", color: "var(--color-text-muted)" }}>
                 <span>58 West Main St, Grantsville, UT 84029</span>
                 <a href="tel:+14352490396" className="contact-link">(435) 249-0396</a>
                 <a href="mailto:outposteats@gmail.com" className="contact-link">outposteats@gmail.com</a>
@@ -388,10 +315,13 @@ function Footer() {
           The Outpost
         </span>
         <div style={{ marginTop: "0.75rem" }}>
-          <a href="https://www.facebook.com/profile.php?id=100075872236123" target="_blank" rel="noopener noreferrer"
-            style={{ fontSize: "0.85rem", color: "var(--color-text-muted)", transition: "color 0.3s" }}
-            onMouseOver={e => (e.currentTarget.style.color = "var(--color-primary)")}
-            onMouseOut={e => (e.currentTarget.style.color = "var(--color-text-muted)")}>
+          <a
+            href="https://www.facebook.com/profile.php?id=100075872236123"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="contact-link"
+            style={{ fontSize: "0.85rem" }}
+          >
             Follow us on Facebook
           </a>
         </div>
@@ -411,10 +341,10 @@ export default function Home() {
       <main>
         <Hero />
         <About />
-        <ParallaxDivider src="/images/food7-steak.jpg" alt="Comfort food at The Outpost" />
+        <ParallaxBand src="/images/food7-steak.jpg" alt="Comfort food at The Outpost" />
         <MenuHighlights />
         <Testimonials />
-        <ParallaxDivider src="/images/food2-breakfast.jpg" alt="Breakfast at The Outpost" />
+        <ParallaxBand src="/images/food2-breakfast.jpg" alt="Breakfast at The Outpost" />
         <Location />
       </main>
       <Footer />
