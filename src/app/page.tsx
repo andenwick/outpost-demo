@@ -156,10 +156,10 @@ function About() {
 }
 
 /* ───────── Parallax band ───────── */
-function ParallaxBand({ src, alt }: { src: string; alt?: string }) {
+function ParallaxBand({ src, alt, reverse }: { src: string; alt?: string; reverse?: boolean }) {
   return (
     <div
-      className="parallax-band"
+      className={`parallax-band${reverse ? " parallax-band-reverse" : ""}`}
       style={{ backgroundImage: `url(${src})` }}
       role="img"
       aria-label={alt || ""}
@@ -274,7 +274,7 @@ function Location() {
         <div className="location-grid">
           <FadeIn>
             <div>
-              <h3 style={{ fontFamily: "var(--ff-body)", fontSize: "0.7rem", color: "var(--color-primary)", letterSpacing: "0.15em", textTransform: "uppercase", fontWeight: 700, marginBottom: "1.5rem" }}>
+              <h3 style={{ fontFamily: "var(--ff-body)", fontSize: "0.7rem", color: "var(--color-primary-light)", letterSpacing: "0.15em", textTransform: "uppercase", fontWeight: 700, marginBottom: "1.5rem" }}>
                 Hours
               </h3>
               <div>
@@ -286,10 +286,10 @@ function Location() {
                 ))}
               </div>
 
-              <h3 style={{ fontFamily: "var(--ff-body)", fontSize: "0.7rem", color: "var(--color-primary)", letterSpacing: "0.15em", textTransform: "uppercase", fontWeight: 700, marginTop: "2.5rem", marginBottom: "1.25rem" }}>
+              <h3 style={{ fontFamily: "var(--ff-body)", fontSize: "0.7rem", color: "var(--color-primary-light)", letterSpacing: "0.15em", textTransform: "uppercase", fontWeight: 700, marginTop: "2.5rem", marginBottom: "1.25rem" }}>
                 Contact
               </h3>
-              <div style={{ display: "flex", flexDirection: "column", gap: "0.6rem", fontSize: "0.85rem", color: "var(--color-text-muted)" }}>
+              <div style={{ display: "flex", flexDirection: "column", gap: "0.6rem", fontSize: "0.85rem", color: "var(--color-text-muted-light)" }}>
                 <span>58 West Main St, Grantsville, UT 84029</span>
                 <a href="tel:+14352490396" className="contact-link">(435) 249-0396</a>
                 <a href="mailto:outposteats@gmail.com" className="contact-link">outposteats@gmail.com</a>
@@ -348,7 +348,7 @@ export default function Home() {
         <ParallaxBand src="/images/food7-steak.jpg" alt="Comfort food at The Outpost" />
         <MenuHighlights />
         <Testimonials />
-        <ParallaxBand src="/images/food2-breakfast.jpg" alt="Breakfast at The Outpost" />
+        <ParallaxBand src="/images/food2-breakfast.jpg" alt="Breakfast at The Outpost" reverse />
         <Location />
       </main>
       <Footer />
